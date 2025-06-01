@@ -1,4 +1,3 @@
-// App.jsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import LoginPage from './login_page'
 import HomeScreen from './home_page'
@@ -15,4 +14,4 @@ function App() {
   )
 }
 
-export default App;
+export default App
