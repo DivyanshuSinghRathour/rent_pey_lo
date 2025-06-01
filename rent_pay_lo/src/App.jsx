@@ -1,20 +1,15 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { HashRouter as Router, Routes, Route } from 'react-router-dom'
 import LoginPage from './login_page'
 import HomeScreen from './home_page'
 
 function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
-        <Route path='/' Component={LoginPage} />
-        <Route path='/login' Component={LoginPage} />
-        <Route path='/home' Component={HomeScreen} />
+        <Route path='/' element={<LoginPage />} />
+        <Route path='/login' element={<LoginPage />} />
+        <Route path='/home' element={<HomeScreen />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   )
 }
-
-export default App
