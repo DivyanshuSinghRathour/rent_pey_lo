@@ -14,7 +14,7 @@ import { features } from "./features";
 import { featuredProducts } from "./featured_products";
 
 
-const RentpeyloHomepage = () => {
+const HomeScreen = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [userName, setUserName] = useState('');
 
@@ -448,4 +448,4 @@ const RentpeyloHomepage = () => {
   );
 };
 
-export default RentpeyloHomepage;
+export default HomeScreen;
