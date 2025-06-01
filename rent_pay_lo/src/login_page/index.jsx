@@ -79,17 +79,20 @@ const LoginPage = () => {
 
     try {
       const isProd = import.meta.env.PROD;
-
+      const url = isProd
+        ? 'https://api.rentpeylo.com/oauth/token'
+        : '/api/oauth/token';
       const response = await axios.post(
-        isProd ? 'https://api.rentpeylo.com/oauth/token' : '/api/oauth/token',
+        url,
         {
           grant_type: 'password',
           username: email,
           password: password,
           role: 'customer',
           email: email,
-        }
+        },
       );
+
       if (response.status === 200) {
         const token = response.data.access_token;
         const userName = response.data.first_name;
