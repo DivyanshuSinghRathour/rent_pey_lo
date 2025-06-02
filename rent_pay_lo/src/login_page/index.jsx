@@ -82,17 +82,6 @@ const LoginScreen = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-600 to-blue-900 p-4">
-      <div className="absolute top-4 left-4 sm:top-6 sm:left-6 md:top-8 md:left-10 z-10">
-        <span
-          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#ff5555]"
-          style={{
-            fontFamily: '"Freckle Face", "Freckle Face Fallback", cursive',
-            lineHeight: "1.2",
-          }}
-        >
-          RentPeylo
-        </span>
-      </div>
       <div className="bg-white/10 rounded-4xl shadow-4xl max-w-6xl w-full grid md:grid-cols-2 overflow-hidden">
         {/* Left Section */}
         <div className="bg-white/10 flex flex-col justify-center items-center text-white p-8 md:p-12 space-y-4">
