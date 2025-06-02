@@ -1,207 +1,234 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Eye, EyeOff } from 'lucide-react';
+import React, { useState } from "react";
+import illustration from "../assets/images/image.png";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-
-
-const LoginPage = () => {
+const LoginScreen = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
-  const [email, setEmail] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // check Email Validation
-  const validateEmail = (value) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(value);
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
   };
-  // on email change
+
   const handleEmailChange = (e) => {
     const value = e.target.value;
     setEmail(value);
-
-    if (value.trim() === '') {
-      setEmailError('Email is required');
+    if (!value.trim()) {
+      setEmailError("Email is required");
     } else if (!validateEmail(value)) {
-      setEmailError('Enter a valid email address');
+      setEmailError("Enter a valid email address");
     } else {
-      setEmailError('');
+      setEmailError("");
     }
   };
 
-  // on password change
   const handlePasswordChange = (e) => {
     const value = e.target.value;
     setPassword(value);
-
     if (value.length < 6) {
-      setPasswordError('Password must be at least 6 characters');
+      setPasswordError("Password must be at least 6 characters");
     } else {
-      setPasswordError('');
+      setPasswordError("");
     }
   };
 
-  const handleContinue = () => {
-    const trimmedEmail = email.trim();
-
-    if (trimmedEmail === '') {
-      setEmailError('Email is required');
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    if (!email || !validateEmail(email)) {
+      setEmailError("Enter a valid email address");
       return;
     }
-
-    if (!validateEmail(trimmedEmail)) {
-      setEmailError('Enter a valid email address');
-      return;
-    }
-
-    setEmailError('');
-    setStep(2);
-  };
-
-  const handleBack = () => {
-    setStep(1);
-    setPassword('');
-    setPasswordError('');
-  };
-
-  const handleLogin = async () => {
     if (!password || password.length < 6) {
-      setPasswordError('Password must be at least 6 characters');
+      setPasswordError("Password must be at least 6 characters");
       return;
     }
-
     setLoading(true);
-
     try {
       const isProd = import.meta.env.PROD;
       const url = isProd
-        ? 'https://api.rentpeylo.com/oauth/token'
-        : '/api/oauth/token';
-      const response = await axios.post(
-        url,
-        {
-          grant_type: 'password',
-          username: email,
-          password: password,
-          role: 'customer',
-          email: email,
-        },
-      );
-
+        ? "https://api.rentpeylo.com/oauth/token"
+        : "/api/oauth/token";
+      const response = await axios.post(url, {
+        grant_type: "password",
+        username: email,
+        password: password,
+        role: "customer",
+        email: email,
+      });
       if (response.status === 200) {
-        const token = response.data.access_token;
-        const userName = response.data.first_name;
-        localStorage.setItem('rentpeylo_token', token);
-        localStorage.setItem('rentpeylo_user_name', userName);
-        navigate('/home');
+        const { access_token, first_name } = response.data;
+        localStorage.setItem("rentpeylo_token", access_token);
+        localStorage.setItem("rentpeylo_user_name", first_name);
+        navigate("/home");
       }
-
     } catch (error) {
-      const rawError = error.response?.data?.error;
-      console.error('Login failed:', rawError ?? 'Invalid email or password');
-
-      const apiErrorMessage =
-        typeof rawError === 'string'
-          ? rawError
-          : rawError?.message || "Invalid Email or password";
-
-      setPasswordError(apiErrorMessage);
+      const apiError =
+        error.response?.data?.error || "Invalid email or password";
+      setPasswordError(apiError);
     } finally {
       setLoading(false);
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4 sm:px-6 lg:px-8 relative">
-      <div className="absolute top-4 left-4 sm:top-6 sm:left-6 text-red-500 font-extrabold text-xl sm:text-2xl font-[cursive]">
-        RentPeylo
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-600 to-blue-900 p-4">
+      <div className="absolute top-4 left-6 z-10 ">
+        <span
+          style={{
+            fontFamily: '"Freckle Face", "Freckle Face Fallback", cursive',
+            fontSize: "42px",
+            lineHeight: "50px",
+            color: "#ff5555",
+            fontWeight: "bold",
+          }}
+        >
+          RentPeylo
+        </span>
       </div>
+      <div className="bg-white/10 rounded-4xl shadow-4xl max-w-6xl w-full grid md:grid-cols-2 overflow-hidden">
+        {/* Left Section */}
+        <div className="bg-white/10 flex flex-col justify-center items-center text-white p-8 md:p-12 space-y-4">
+          <img
+            src={illustration}
+            alt="Illustration"
+            className="max-w-[240px] md:max-w-xs mb-4"
+          />
+          <h2 className="text-2xl font-semibold text-center leading-snug">
+            Discover a smarter way to rent appliances
+          </h2>
+          <p className="text-base text-center opacity-80">
+            Fast, secure, and convenient.
+          </p>
+        </div>
 
-      <div className="w-full max-w-md sm:max-w-sm bg-white p-6 sm:p-8 border border-gray-200 rounded-xl shadow-md">
-        {step === 1 ? (
-          <>
-            <h2 className="text-xl font-semibold mb-6 text-center sm:text-left">Login</h2>
+        {/* Right Section */}
+        <div className="bg-white  md:rounded-tr-2xl md:rounded-br-2xl flex flex-col justify-center relative">
+          <p
+            className="absolute top-8 left-0 text-sm sm:text-base font-medium text-white py-2 sm:py-3 px-4 sm:px-6 rounded-tr-2xl rounded-br-2xl shadow-md"
+            style={{
+              background: "linear-gradient(to right,#8e59dd, #4447AD)",
+            }}
+          >
+            Welcome back 👋
+          </p>
 
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              type="text"
-              placeholder="Enter email"
-              value={email}
-              onChange={handleEmailChange}
-              className={`w-full px-4 py-2 mb-1 border rounded-md focus:outline-none focus:ring-2 ${emailError
-                ? 'border-red-500 focus:ring-red-500'
-                : 'border-gray-300 focus:ring-orange-600'
-                }`}
-            />
-            {emailError && <p className="text-red-600 text-sm mb-3">{emailError}</p>}
-
-            <button
-              onClick={handleContinue}
-              className="w-full bg-orange-800 text-white py-2 rounded-md hover:bg-orange-900 transition mt-7"
-            >
-              Continue
-            </button>
-
-            <hr className="my-4" />
-
-            <button className="w-full bg-gray-100 text-sm py-2 rounded-md hover:bg-gray-200 transition">
-              Create your RentPeylo account
-            </button>
-          </>
-        ) : (
-          <>
-            <h2 className="text-xl font-semibold mb-4 text-center sm:text-left">
-              Login with Password
-            </h2>
-
-            <div className="flex items-center justify-between text-sm mb-2">
-              <span className="text-gray-800">{email}</span>
-              <button onClick={handleBack} className="text-orange-700 font-medium">
-                Change user
-              </button>
-            </div>
-
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <div className="relative mb-1">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Enter your password"
-                value={password}
-                onChange={handlePasswordChange}
-                className={`w-full px-4 py-2 border rounded-md pr-10 focus:outline-none focus:ring-2 ${passwordError
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-orange-600'
-                  }`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute top-2 right-2 text-gray-500"
+          <div className="p-6 sm:p-10 md:p-12">
+            <div className="pt-12 mt-10">
+              <span
+                style={{
+                  fontFamily:
+                    '"Freckle Face", "Freckle Face Fallback", cursive',
+                  fontSize: "34px",
+                  lineHeight: "50px",
+                  color: "#ff5555",
+                  fontWeight: "bold",
+                }}
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-            {passwordError && <p className="text-red-600 text-sm mb-3">{passwordError}</p>}
+                RentPeylo
+              </span>
 
-            <div className="flex justify-between text-sm mb-4">
-              <span className="text-gray-600">Forgot password?</span>
-              <button className="text-orange-700 font-medium">Reset Password</button>
+              <p
+                className="text-sm font-medium mt-2"
+                style={{ color: "#FF5B53" }}
+              >
+                Login your account
+              </p>
             </div>
 
-            <button
-              onClick={handleLogin}
-              className="w-full bg-orange-800 text-white py-2 rounded-md hover:bg-orange-900 transition disabled:opacity-50 flex items-center justify-center gap-2"
-              disabled={!!passwordError || password === '' || loading}
-            >
-              {loading ? (
-                <>
+            {/* Form */}
+            <form className="flex flex-col mt-10">
+              <input
+                type="text"
+                placeholder="Email"
+                value={email}
+                onChange={handleEmailChange}
+                className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 transition placeholder-gray-400 shadow-sm"
+              />
+              {emailError && (
+                <p className="text-red-500 text-sm mt-1">{emailError}</p>
+              )}
+              <div className="relative mt-5">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
+                  value={password}
+                  onChange={handlePasswordChange}
+                  className="border border-gray-300 rounded-md px-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 transition placeholder-gray-400 shadow-sm w-full"
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                  aria-label="Toggle password visibility"
+                >
+                  {showPassword ? (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                  )}
+                </button>
+                {passwordError && (
+                  <p className="text-red-500 text-sm mt-1">{passwordError}</p>
+                )}
+              </div>
+              <button
+                type="submit"
+                onClick={handleLogin}
+                disabled={loading}
+                className="text-white py-2 px-6 mt-10 rounded-md transition shadow-md hover:opacity-90 self-center flex items-center justify-center"
+                style={{
+                  background: "linear-gradient(to right, #FF5B5399, #FF5B53)",
+                  width: "fit-content",
+                  opacity: loading ? 0.7 : 1,
+                  minWidth: "120px",
+                  height: "42px",
+                }}
+              >
+                {loading ? (
                   <svg
-                    className="animate-spin h-4 w-4 text-white"
+                    className="animate-spin h-5 w-5 text-white"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -213,31 +240,41 @@ const LoginPage = () => {
                       r="10"
                       stroke="currentColor"
                       strokeWidth="4"
-                    ></circle>
+                    />
                     <path
                       className="opacity-75"
                       fill="currentColor"
-                      d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
-                    ></path>
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    />
                   </svg>
-                  Logging in...
-                </>
-              ) : (
-                'Log in'
-              )}
-            </button>
+                ) : (
+                  "Login"
+                )}
+              </button>
+            </form>
 
-
-            <hr className="my-4" />
-
-            <button className="w-full bg-gray-100 text-sm py-2 rounded-md hover:bg-gray-200 transition">
-              Log in with OTP on your email
-            </button>
-          </>
-        )}
+            <div className="mt-20 text-sm text-center space-y-2">
+              <p>
+                <span className="text-gray-500">Don't have an account?</span>{" "}
+                <a
+                  href="#"
+                  className="text-red-500 font-medium hover:underline"
+                >
+                  Create Account
+                </a>
+              </p>
+              <a
+                href="#"
+                className="text-red-400 text-xs hover:underline block"
+              >
+                Forgot Password?
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default LoginScreen;
