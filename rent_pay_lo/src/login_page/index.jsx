@@ -82,14 +82,12 @@ const LoginScreen = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-600 to-blue-900 p-4">
-      <div className="absolute top-4 left-6 z-10 ">
+      <div className="absolute top-4 left-4 sm:top-6 sm:left-6 md:top-8 md:left-10 z-10">
         <span
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#ff5555]"
           style={{
             fontFamily: '"Freckle Face", "Freckle Face Fallback", cursive',
-            fontSize: "42px",
-            lineHeight: "50px",
-            color: "#ff5555",
-            fontWeight: "bold",
+            lineHeight: "1.2",
           }}
         >
           RentPeylo
